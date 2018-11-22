@@ -22,10 +22,6 @@ class LocalBinaryPatterns:
         (hist, _) = np.histogram(lbp.ravel(),
                                  bins=np.arange(0, self.numPoints + 3),
                                  range=(0, self.numPoints + 2))
-
-
-
-
         # normalize the histogram
         hist = hist.astype("float")
         hist /= (hist.sum() + eps)
