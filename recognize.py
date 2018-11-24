@@ -2,7 +2,7 @@
 from extract_feature.lbp import LocalBinaryPatterns
 from sklearn.svm import LinearSVC
 from sklearn.metrics import precision_recall_fscore_support as score
-
+from tqdm import tqdm
 import argparse
 import cv2
 import os
@@ -34,11 +34,12 @@ class recognize:
 
 
     def train(self):
+        print("******* Training ********")
         train_labels = []
         lbn_data = []
-        for case in self.TRAIN_IMAGES:
+        for case in tqdm(self.TRAIN_IMAGES):
             samples = next(os.walk(os.path.join(self.IMAGE_DIR, case)))[2]
-            for sample in samples:
+            for sample in tqdm(samples):
                 imagePath = os.path.join(self.IMAGE_DIR, case, os.path.splitext(sample)[0] + ".tif")
                 image = cv2.imread(imagePath)
                 gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
@@ -51,10 +52,11 @@ class recognize:
         self.model.fit(lbn_data, train_labels)
 
     def test(self):
+        print("******* Testing ********")
         # loop over the testing images
-        for case in self.TEST_IMAGES:
+        for case in tqdm(self.TEST_IMAGES):
             samples = next(os.walk(os.path.join(self.IMAGE_DIR, case)))[2]
-            for sample in samples:
+            for sample in tqdm(samples):
                 imagePath = os.path.join(self.IMAGE_DIR, case, os.path.splitext(sample)[0] + ".tif")
                 image = cv2.imread(imagePath)
                 gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
