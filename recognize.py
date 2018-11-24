@@ -25,7 +25,10 @@ class recognize:
         self.model = LinearSVC(C=100.0, random_state=42)
 
     def prepare(self):
+        print("Data DIR:", os.path.join(self.IMAGE_DIR))
+        print("GroundTruth DIR:", os.path.join(self.GT_DIR))
         images_list = next(os.walk(os.path.join(self.IMAGE_DIR)))[1]
+        print("Image List: ", len(images_list))
         self.TEST_IMAGES = random.sample(images_list, self.TEST_NUM)
         self.TRAIN_IMAGES = list(set(images_list) - set(self.TEST_IMAGES))
 
