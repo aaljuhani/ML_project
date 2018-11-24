@@ -39,7 +39,7 @@ class recognize:
         lbn_data = []
         for case in tqdm(self.TRAIN_IMAGES):
             samples = next(os.walk(os.path.join(self.IMAGE_DIR, case)))[2]
-            for sample in tqdm(samples):
+            for sample in tqdm(samples, desc=case):
                 imagePath = os.path.join(self.IMAGE_DIR, case, os.path.splitext(sample)[0] + ".tif")
                 image = cv2.imread(imagePath)
                 gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
@@ -56,7 +56,7 @@ class recognize:
         # loop over the testing images
         for case in tqdm(self.TEST_IMAGES):
             samples = next(os.walk(os.path.join(self.IMAGE_DIR, case)))[2]
-            for sample in tqdm(samples):
+            for sample in tqdm(samples, desc=case):
                 imagePath = os.path.join(self.IMAGE_DIR, case, os.path.splitext(sample)[0] + ".tif")
                 image = cv2.imread(imagePath)
                 gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
