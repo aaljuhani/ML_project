@@ -2,10 +2,19 @@
 Machine Learning Model to classify detect Mitoses cell structures
 
 ## Installation Instructions
-conda env create -n histosearch -f histosearch.yml
+
+#### Prerequierment:
+Numpy: conda install -c conda-forge numpy 
+npm: conda install -c conda-forge nodejs 
+ 
+
+
+#### create conda env
+conda env create -n histosearch 
+
 
 #### then activate the conda virtual environment
-source activate label-coach
+source activate histosearch
 
 
 ## To Run the Model
