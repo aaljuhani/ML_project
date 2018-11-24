@@ -16,7 +16,7 @@ class recognize:
         self.TEST_IMAGES = []
         self.TRAIN_LABELS = []
         self.TEST_LABELS = []
-        self.TEST_NUM = 0
+        self.TEST_NUM = 10
         self.PRED_LABELS = []
 
         # FEATURE MODEL
