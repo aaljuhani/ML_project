@@ -17,14 +17,14 @@ dependencies:
   - dask-core=0.20.2
   - decorator=4.3.0
   - enum34=1.1.6
-  - freetype=2.9.1=h6debe1e_4
+  - freetype=2.9.1
   - functools32=3.2.3.2
   - futures=3.2.0
   - imageio=2.4.1
   - jpeg=9c=h470a237_1
   - kiwisolver=1.0.1
-  - libpng=1.6.35=ha92aebf_2libcxx
-  - libtiff=4.0.9=he6b73bb_2
+  - libpng=1.6.35
+  - libtiff=4.0.9
   - matplotlib=2.2.3
   - networkx=2.2
   - olefile=0.46
@@ -39,33 +39,33 @@ dependencies:
   - subprocess32=3.5.3
   - toolz=0.9.0
   - tornado=5.1.1
-  - blas=1.0=mkl
-  - ca-certificates=2018.03.07=0
+  - blas=1.0
+  - ca-certificates=2018.03.07
   - certifi=2018.10.15
   - hdf5=1.8.20=hfa1e0ec_1
-  - intel-openmp=2019.1=144
+  - intel-openmp=2019.1
   - libcxx=4.0.1=hcfea43d_1
-  - libcxxabi=4.0.1=hcfea43d_1
-  - libedit=3.1.20170329=hb402a30_2
-  - libffi=3.2.1=h475c297_4
-  - libgfortran=3.0.1=h93005f0_2
-  - mkl=2018.0.3=1
+  - libcxxabi=4.0.1
+  - libedit=3.1.20170329
+  - libffi=3.2.1
+  - libgfortran=3.0.1
+  - mkl=2018.0.3
   - mkl_fft=1.0.6
   - mkl_random=1.0.1
-  - ncurses=6.1=h0a44026_0
+  - ncurses=6.1
   - numpy=1.15.4
   - numpy-base=1.15.4
-  - openssl=1.1.1a=h1de35cc_0
+  - openssl=1.1.1a
   - pip=18.1
-  - python=2.7.15=h8f8e585_4
-  - readline=7.0=h1de35cc_5
+  - python=2.7.15
+  - readline=7.0
   - scikit-learn=0.20.0
   - scipy=1.1.0
   - setuptools=40.6.2
-  - sqlite=3.25.3=ha441bb4_0
-  - tk=8.6.8=ha441bb4_0
+  - sqlite=3.25.3
+  - tk=8.6.8
   - wheel=0.32.3
-  - xz=5.2.4=h1de35cc_4
-  - zlib=1.2.11=h1de35cc_3
+  - xz=5.2.4
+  - zlib=1.2.11
   - opencv3=3.1.0
-  - tbb=4.3_20141023=0
+  - tbb=4.3_20141023
