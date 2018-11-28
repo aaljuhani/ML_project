@@ -102,15 +102,11 @@ if __name__ == '__main__':
                     help="path to the training images")
     ap.add_argument("-gt", "--gt", required=True,
                     help="path to the tesitng images")
-    ap.add_argument("-lbn_points", "--lbn_points", required=True,
-                    help="LBN points param")
-    ap.add_argument("-lbn_rad", "--lbn_radius", required=True,
-                    help="LBN radius param")
     args = vars(ap.parse_args())
 
 
 
-    mitoses_model = recognize(args["data"],args["gt"],args["lbn_points"],args["lbn_radius"])
+    mitoses_model = recognize(args["data"],args["gt"])
     mitoses_model.prepare()
     mitoses_model.train()
     mitoses_model.test()
