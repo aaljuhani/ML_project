@@ -7,9 +7,12 @@ import argparse
 import cv2
 import os
 import random
+from sklearn.externals import joblib
+import time
+
 
 class recognize:
-    def __init__(self, image_dir, gt_dir, lbn_points, lbn_radius):
+    def __init__(self, image_dir, gt_dir):
         self.IMAGE_DIR = image_dir
         self.GT_DIR = gt_dir
         self.TRAIN_IMAGES = []
@@ -18,9 +21,13 @@ class recognize:
         self.TEST_LABELS = []
         self.TEST_NUM = 10
         self.PRED_LABELS = []
+        self.TIMESTR = time.strftime("%Y%m%d-%H%M%S")
 
         # FEATURE MODEL
-        self.desc = LocalBinaryPatterns(int(lbn_points), int(lbn_radius))
+        self.LBP_points = 8
+        self.LBP_radius = 1
+        self.desc = LocalBinaryPatterns(self.LBP_points, self.LBP_radius)
+
         # SVM model
         self.model = LinearSVC(C=100.0, random_state=42)
 
@@ -50,6 +57,9 @@ class recognize:
                 lbn_data.append(hist)
         # train a Linear SVM on the data
         self.model.fit(lbn_data, train_labels)
+        # export trained model
+        joblib.dump(self.model, 'logs/lbp_svm_'+self.TIMESTR+'.pkl', compress=9)
+
 
     def test(self):
         print("******* Testing ********")
@@ -66,6 +76,16 @@ class recognize:
                 prediction = self.model.predict(hist.reshape(1, -1))
                 self.TEST_LABELS.append(label)
                 self.PRED_LABELS.append(prediction)
+
+
+    def predict(self, PRED_PATH , MODEL_PATH):
+        model_clone = joblib.load(MODEL_PATH)
+        image = cv2.imread(PRED_PATH)
+        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        hist = self.desc.describe(gray)
+        prediction = model_clone.predict(hist.reshape(1, -1))
+        return prediction
+
 
     def eval(self):
         precision, recall, fscore, support = score(self.TEST_LABELS, self.PRED_LABELS)
