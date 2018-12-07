@@ -235,19 +235,19 @@ class recognize:
 
 if __name__ == '__main__':
 	# construct the argument parse and parse the arguments
-	# ap = argparse.ArgumentParser()
-	# ap.add_argument("-d", "--data", required=True,
-					# help="path to the training images")
-	# ap.add_argument("-gt", "--gt", required=True,
-					# help="path to the tesitng images")
-	# ap.add_argument("-sift", "--sift", required=False,
-					# help="path to the tesitng images")
-	# args = vars(ap.parse_args())
+	ap = argparse.ArgumentParser()
+	ap.add_argument("-d", "--data", required=True,
+					help="path to the training images")
+	ap.add_argument("-gt", "--gt", required=True,
+					help="path to the tesitng images")
+	ap.add_argument("-sift", "--sift", required=False,
+					help="path to the tesitng images")
+	args = vars(ap.parse_args())
 
 
 
-	# mitoses_model = recognize(args["data"],args["gt"])
-	mitoses_model = recognize('../../DATA/mitosis_image_data/', '../../DATA/mitoses_ground_truth/')
+	mitoses_model = recognize(args["data"],args["gt"])
+	# mitoses_model = recognize('../../DATA/mitosis_image_data/', '../../DATA/mitoses_ground_truth/')
 
 	mitoses_model.prepare()
 	
