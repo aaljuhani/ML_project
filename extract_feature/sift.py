@@ -115,7 +115,7 @@ class SIFT:
 
 		return scaled_features, tr_labels
 		
-	def get_features(self, image_path, label_path):
+	def get_features(self, image_path, label_path=None):
 		im = cv2.imread(image_path)
 		gray = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
 		new_px = 500
@@ -130,7 +130,9 @@ class SIFT:
 
 		sift = cv2.xfeatures2d.SIFT_create()
 		kpts, des = sift.detectAndCompute(resized, None)
-		label = 1 if os.path.isfile(label_path) else 0
+		label = None
+		if label_path is not None:
+			label = 1 if os.path.isfile(label_path) else 0
 		
 		return des, label
 		
