@@ -5,6 +5,7 @@ mpl.use('Agg')
 import matplotlib.pyplot as plt
 from extract_feature.lbp import LocalBinaryPatterns
 from extract_feature.sift import SIFT
+from extract_feature.hog import HOG
 from sklearn.svm import LinearSVC
 from sklearn.metrics import precision_recall_fscore_support as score
 from sklearn.metrics import roc_curve, confusion_matrix, auc
@@ -43,6 +44,7 @@ class recognize:
         self.num_codes = 256
         self.iter = 1
         self.desc = LocalBinaryPatterns(self.LBP_points, self.LBP_radius)
+        self.hog = HOG((8, 8), (2, 2), 9)
         self.sift = SIFT(self.num_codes, self.iter)
 
         # SVM model
@@ -57,7 +59,7 @@ class recognize:
         images_list = next(os.walk(os.path.join(self.IMAGE_DIR)))[1]
         print("Image List: ", len(images_list))
 
-    def train(self):
+    def train_LBP(self):
         print("******* Training ********")
         train_labels = []
         lbn_feat = []
@@ -88,7 +90,7 @@ class recognize:
         # export trained model
         joblib.dump(self.model, 'logs/lbp_svm_' + self.TIMESTR + '.pkl', compress=9)
 
-    def test(self):
+    def test_LBP(self):
         print("******* Testing ********")
         # loop over the testing images
         for case in tqdm(self.TEST_IMAGES):
@@ -105,6 +107,57 @@ class recognize:
                 self.TEST_LABELS.append(label)
                 self.PRED_LABELS.append(prediction)
                 self.PRED_SCORES.append(y_score[0])
+
+    def train_HOG(self):
+        print("******* Training ********")
+        train_labels = []
+        hog_feat = []
+        for case in tqdm(self.TRAIN_IMAGES):
+            samples = next(os.walk(os.path.join(self.IMAGE_DIR, case)))[2]
+            for sample in tqdm(samples, desc=case):
+                imagePath = os.path.join(self.IMAGE_DIR, case, os.path.splitext(sample)[0] + ".tif")
+                image = cv2.imread(imagePath)
+                gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+                hist = self.hog.hog(gray)
+                label_path = os.path.join(self.GT_DIR, case, os.path.splitext(sample)[0] + ".csv")
+                lable = 1 if os.path.isfile(label_path) else 0
+                train_labels.append(lable)
+                hog_feat.append(hist)
+
+        # train a Linear SVM on the data
+        scoring = ['precision_macro', 'recall_macro', 'f1_macro']
+        self.scores = cross_validate(self.model, hog_feat, train_labels, scoring=scoring,
+                                     cv=self.KFOLD,
+                                     return_train_score=True, n_jobs=16, verbose=1, return_estimator=True)
+        # print (sorted(self.scores.keys()))
+        # print (self.scores['estimator'], self.scores['train_f1_macro'], self.scores['test_f1_macro'])
+        f1 = self.scores['test_f1_macro']
+        # print (type(f1), f1)
+        idx = np.argmax(f1)
+        models = self.scores['estimator']
+        self.model = models[idx]
+        # export trained model
+        joblib.dump(self.model, 'logs/hog_svm_' + self.TIMESTR + '.pkl', compress=9)
+
+    def test_HOG(self):
+        print("******* Testing ********")
+        # loop over the testing images
+        for case in tqdm(self.TEST_IMAGES):
+            samples = next(os.walk(os.path.join(self.IMAGE_DIR, case)))[2]
+            for sample in tqdm(samples, desc=case):
+                imagePath = os.path.join(self.IMAGE_DIR, case, os.path.splitext(sample)[0] + ".tif")
+                image = cv2.imread(imagePath)
+                gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+                hist = self.hog.hog(gray)
+                label_path = os.path.join(self.GT_DIR, case, os.path.splitext(sample)[0] + ".csv")
+                label = 1 if os.path.isfile(label_path) else 0
+                prediction = self.model.predict(hist.reshape(1, -1))
+                y_score = self.model.decision_function(hist.reshape(1, -1))
+                self.TEST_LABELS.append(label)
+                self.PRED_LABELS.append(prediction)
+                self.PRED_SCORES.append(y_score[0])
+
+
 
     def train_sift(self):
         print("******* Training using SIFT Features ********")
@@ -141,6 +194,8 @@ class recognize:
         # self.classifier.fit(sift_feat, train_labels)
         # export trained model
         joblib.dump(self.classifier, 'logs/sift_svm_' + self.TIMESTR + '.pkl', compress=9)
+
+
 
     def test_sift(self):
         print("******* Testing ********")
@@ -243,7 +298,7 @@ if __name__ == '__main__':
 
     mitoses_model.prepare()
 
-    mitoses_model.train()
-    mitoses_model.test()
+    mitoses_model.train_HOG()
+    mitoses_model.test_HOG()
     mitoses_model.eval()
     mitoses_model.plotROC()
