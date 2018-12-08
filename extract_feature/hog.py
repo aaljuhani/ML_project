@@ -1,41 +1,73 @@
-
-from skimage import feature
 import numpy as np
 import cv2
-import pandas as pd
-import matplotlib
-import numpy as np
 import matplotlib.pyplot as plt
 
-
 class HOG:
-    def __init__(self, numPoints, radius):
-        self.numPoints = numPoints
-        self.radius = radius
+    def __init__(self , cell_size, block_size, nbins):
+        self.cell_size = cell_size # h x w in pixels
+        self.block_size = block_size # h x w in cells
+        self.nbins = nbins  # number of orientation bins
 
-    def describe(self,image, eps=1e-7):
-        # compute the Local Binary Pattern representation
-        # of the image, and then use the LBP representation
-        # to build the histogram of patterns
-
+    def hog(self, image):
+        # resize images
         new_px = 500
         # we need to keep in mind aspect ratio so the image does
         # not look skewed or distorted -- therefore, we calculate
         # the ratio of the new image to the old image
         r = float(new_px) / image.shape[1]
         dim = (new_px, int(image.shape[0] * r))
-
         # perform the actual resizing of the image and show it
-        resized = cv2.resize(image, dim, interpolation=cv2.INTER_AREA)
+        img = cv2.resize(image, dim, interpolation=cv2.INTER_AREA)
 
-        lbp = feature.local_binary_pattern(resized, self.numPoints,
-                                           self.radius, method="uniform")
-        (hist, _) = np.histogram(lbp.ravel(),
-                                 bins=np.arange(0, self.numPoints + 3),
-                                 range=(0, self.numPoints + 2))
-        # normalize the histogram
-        hist = hist.astype("float")
-        hist /= (hist.sum() + eps)
+        # winSize is the size of the image cropped to an multiple of the cell size
+        hog = cv2.HOGDescriptor(_winSize=(img.shape[1] // self.cell_size[1] * self.cell_size[1],
+                                          img.shape[0] // self.cell_size[0] * self.cell_size[0]),
+                                _blockSize=(self.block_size[1] * self.cell_size[1],
+                                            self.block_size[0] * self.cell_size[0]),
+                                _blockStride=(self.cell_size[1], self.cell_size[0]),
+                                _cellSize=(self.cell_size[1], self.cell_size[0]),
+                                _nbins=self.nbins)
 
-        # return the histogram of Local Binary Patterns
-        return hist
+        n_cells = (img.shape[0] // self.cell_size[0], img.shape[1] // self.cell_size[1])
+        hog_feats = hog.compute(img)\
+                       .reshape(n_cells[1] - self.block_size[1] + 1,
+                                n_cells[0] - self.block_size[0] + 1,
+                                self.block_size[0], self.block_size[1], self.nbins) \
+                       .transpose((1, 0, 2, 3, 4))  # index blocks by rows first
+        # hog_feats now contains the gradient amplitudes for each direction,
+        # for each cell of its group for each group. Indexing is by rows then columns.
+
+        gradients = np.zeros((n_cells[0], n_cells[1], self.nbins))
+
+        # count cells (border cells appear less often across overlapping groups)
+        cell_count = np.full((n_cells[0], n_cells[1], 1), 0, dtype=int)
+
+        for off_y in range(self.block_size[0]):
+            for off_x in range(self.block_size[1]):
+                gradients[off_y:n_cells[0] - self.block_size[0] + off_y + 1,
+                          off_x:n_cells[1] - self.block_size[1] + off_x + 1] += \
+                    hog_feats[:, :, off_y, off_x, :]
+                cell_count[off_y:n_cells[0] - self.block_size[0] + off_y + 1,
+                           off_x:n_cells[1] - self.block_size[1] + off_x + 1] += 1
+
+        # Average gradients
+        gradients /= cell_count
+
+        '''
+        # Preview
+        plt.figure()
+        plt.imshow(img, cmap='gray')
+        plt.show()
+
+        bin = 5  # angle is 360 / nbins * direction
+        plt.pcolor(gradients[:, :, bin])
+        plt.gca().invert_yaxis()
+        plt.gca().set_aspect('equal', adjustable='box')
+        plt.colorbar()
+        plt.show()
+        '''
+
+        return gradients
+
+
+
