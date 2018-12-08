@@ -17,7 +17,18 @@ class LocalBinaryPatterns:
         # compute the Local Binary Pattern representation
         # of the image, and then use the LBP representation
         # to build the histogram of patterns
-        lbp = feature.local_binary_pattern(image, self.numPoints,
+
+        new_px = 500
+        # we need to keep in mind aspect ratio so the image does
+        # not look skewed or distorted -- therefore, we calculate
+        # the ratio of the new image to the old image
+        r = float(new_px) / image.shape[1]
+        dim = (new_px, int(image.shape[0] * r))
+
+        # perform the actual resizing of the image and show it
+        resized = cv2.resize(image, dim, interpolation=cv2.INTER_AREA)
+
+        lbp = feature.local_binary_pattern(resized, self.numPoints,
                                            self.radius, method="uniform")
         (hist, _) = np.histogram(lbp.ravel(),
                                  bins=np.arange(0, self.numPoints + 3),
