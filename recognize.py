@@ -75,7 +75,7 @@ class recognize:
 
         # train a Linear SVM on the data
         scoring = ['precision_macro', 'recall_macro', 'f1_macro']
-        self.scores = cross_validate(self.model, lbn_feat, self.TRAIN_LABELS, scoring=scoring,
+        self.scores = cross_validate(self.classifier, lbn_feat, self.TRAIN_LABELS, scoring=scoring,
                                      cv=self.KFOLD,
                                      return_train_score=True, n_jobs=16, verbose=1, return_estimator=True)
         # print (sorted(self.scores.keys()))
@@ -84,9 +84,9 @@ class recognize:
         # print (type(f1), f1)
         idx = np.argmax(f1)
         models = self.scores['estimator']
-        self.model = models[idx]
+        self.classifier = models[idx]
         # export trained model
-        joblib.dump(self.model, 'logs/lbp_svm_' + self.TIMESTR + '.pkl', compress=9)
+        joblib.dump(self.classifier, 'logs/lbp_svm_' + self.TIMESTR + '.pkl', compress=9)
 
     def test(self):
         print("******* Testing ********")
@@ -100,8 +100,8 @@ class recognize:
                 hist = self.desc.describe(gray)
                 label_path = os.path.join(self.GT_DIR, case, os.path.splitext(sample)[0] + ".csv")
                 label = 1 if os.path.isfile(label_path) else 0
-                prediction = self.model.predict(hist.reshape(1, -1))
-                y_score = self.model.decision_function(hist.reshape(1, -1))
+                prediction = self.classifier.predict(hist.reshape(1, -1))
+                y_score = self.classifier.decision_function(hist.reshape(1, -1))
                 self.TEST_LABELS.append(label)
                 self.PRED_LABELS.append(prediction)
                 self.PRED_SCORES.append(y_score[0])
