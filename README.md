@@ -1,4 +1,4 @@
-# histosearch
+# histoSearch
 Machine Learning Model to classify detect Mitoses cell structures
 
 # Github: https://github.com/aaljuhani/histosearch
