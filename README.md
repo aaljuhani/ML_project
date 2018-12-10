@@ -1,6 +1,10 @@
 # histosearch
 Machine Learning Model to classify detect Mitoses cell structures
 
+# Dataset
+#### DatasetURL for TUPAC challenge:http://tupac.tue-image.nl/node/3Direct URL for the Mitosis 
+#### Dataset:https://drive.google.com/drive/u/0/folders/0B--ztKW0d17XbXNPQVY5VWxiZkU#list
+
 ## Installation Instructions
 
 #### Prerequierment:
@@ -18,7 +22,7 @@ source activate histosearch
 
 
 ## To Run the Model
-python recognize.py --data <data_DIR> --gt <groundtruth_DIR> --lbn_points <Local Binary Pattern Points Param> --lbn_radius <Local Binary Pattern Radius Param>
+python recognize.py --data <data_DIR> --gt <groundtruth_DIR>
 
 example:
-python recognize.py --data data/tiles --gt data/groundtruth --lbn_points 8 --lbn_radius 1
+python recognize.py --data data/tiles --gt data/groundtruth
