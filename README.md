@@ -10,8 +10,8 @@ URL for the Mitosis Dataset: https://drive.google.com/drive/u/0/folders/0B--ztKW
 #### Prerequierment:
 Numpy: conda install -c conda-forge numpy 
 npm: conda install -c conda-forge nodejs 
- 
-
+opencv: pip install opencv=3.4.2
+pip install opencv-contrib=3.4.2
 
 #### create conda env
 conda env create -n histosearch 
