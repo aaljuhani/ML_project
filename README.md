@@ -1,7 +1,7 @@
-# histoSearch
+# Detect Mitoses cell structures
 Machine Learning Model to classify detect Mitoses cell structures
 
-# Github: https://github.com/aaljuhani/histosearch
+# Github: https://github.com/aaljuhani/ML_project
 
 # Dataset
 URL for TUPAC challenge: http://tupac.tue-image.nl/node/3Direct  
